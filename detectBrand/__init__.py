@@ -22,22 +22,29 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     if name:
 
+        # https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts/python-analyze
+
         # Replace <Subscription Key> with your valid subscription key.
         subscription_key = os.environ['subscriptionKey']
         assert subscription_key
 
         # Get endpoint and key from environment variables
-        endpoint = 'https://westus.api.cognitive.microsoft.com/'
-        vision_base_url = "https://westus.api.cognitive.microsoft.com/vision/v2.0/"
+        analyze_url = "https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze"
 
-        analyze_url = vision_base_url + "analyze"
+        if name == "test" or name == "Test" or name == "TEST":
+            pass
+            # Set image_url to the URL of th etest image that will be analyzed.
+            image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/" + \
+                "Broadway_and_Times_Square_by_night.jpg/450px-Broadway_and_Times_Square_by_night.jpg"
 
-        # Set image_url to the URL of an image that you want to analyze.
-        image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/" + \
-            "Broadway_and_Times_Square_by_night.jpg/450px-Broadway_and_Times_Square_by_night.jpg"
+        else:
+            pass
+            # Set image_url to the URL of the image that will be analyzed
+            image_url = name
 
+        logging.info(image_url)
         headers = {'Ocp-Apim-Subscription-Key': subscription_key}
-        params = {'visualFeatures': 'Categories,Description,Color'}
+        params = {'visualFeatures': 'Categories,Description,Color,Brands'}
         data = {'url': image_url}
         response = requests.post(analyze_url, headers=headers,
                                 params=params, json=data)
@@ -46,6 +53,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(json.dumps(response.json()))
     else:
         return func.HttpResponse(
-             "Please pass a name on the query string or in the request body",
+             "Please pass a blob name on the query string or in the request body",
              status_code=400
         )
