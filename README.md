@@ -66,9 +66,11 @@ Once you have the quick start code running you will need to add these imports to
 - from msrest.authentication import CognitiveServicesCredentials
 - from io import BytesIO
 
-#Note: If you are using a Jupyter notebook, uncomment the following line.
-#%matplotlib inline
-#import matplotlib.pyplot as plt
-#from PIL import Image
+Note: If you are using a Jupyter notebook, include the following lines.
+%matplotlib inline
+import matplotlib.pyplot as plt
+from PIL import Image
 
 Finally, if you want to debug locally you will need to read tsi article about how to set up local debugging.  https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local
+
+Long running fucntions ********* need to see if there is a response time limitation on functions and advise how to handle this in the model python.************
