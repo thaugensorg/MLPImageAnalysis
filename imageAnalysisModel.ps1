@@ -9,8 +9,8 @@ while([string]::IsNullOrWhiteSpace($brandDetectionAppName))
 $modelResourceGroupName = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  The default value is imageAnalysisModel'
 if ([string]::IsNullOrWhiteSpace($modelResourceGroupName)) {$modelResourceGroupName = "imageAnalysisModel"}
 
-$modelStorageAccountName = Read-Host -Prompt 'Input the name of the azure storage account you want to create for this installation of the model.  By default this value is imageanalysisstorage'
-if ([string]::IsNullOrWhiteSpace($modelStorageAccountName)) {$modelStorageAccountName = "imageanalysisstorage"}
+while([string]::IsNullOrWhiteSpace($modelStorageAccountName))
+  {$modelStorageAccountName= Read-Host -Prompt "Input the name of the azure storage account you want to create for this installation of the model. Note this must be a name that only uses lowercase letters and numbers and is unique across all of Azure"}
 
 $modelStorageAccountKey = $null
 $modelLocation = "westus"
