@@ -24,7 +24,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         # https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts/python-analyze
 
-        # Replace <Subscription Key> with your valid subscription key.
         subscription_key = os.environ['subscriptionKey']
         assert subscription_key
 
