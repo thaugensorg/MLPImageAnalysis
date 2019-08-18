@@ -3,11 +3,11 @@
 while([string]::IsNullOrWhiteSpace($subscription))
   {$subscription= Read-Host -Prompt "Input the name of the subscription where this solution will be deployed"}
 
-$modelResourceGroupName = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  (default=SemisupervisedModel)'
-  if ([string]::IsNullOrWhiteSpace($modelResourceGroupName)) {$modelResourceGroupName = "SemisupervisedModel"}
-  
-while([string]::IsNullOrWhiteSpace($SemisupervisedAppName))
-  {$SemisupervisedAppName= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
+while([string]::IsNullOrWhiteSpace($brandDetectionAppName))
+  {$brandDetectionAppName= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
+
+$modelResourceGroupName = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  The default value is imageAnalysisModel'
+if ([string]::IsNullOrWhiteSpace($modelResourceGroupName)) {$modelResourceGroupName = "imageAnalysisModel"}
 
 while([string]::IsNullOrWhiteSpace($modelStorageAccountName))
   {$modelStorageAccountName= Read-Host -Prompt "Input the name of the azure storage account you want to create for this installation of the model. Note this must be a name that only uses lowercase letters and numbers and is unique across all of Azure"}
