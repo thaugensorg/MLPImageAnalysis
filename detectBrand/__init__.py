@@ -11,26 +11,28 @@ from msrest.authentication import CognitiveServicesCredentials
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
+    dataBlobURL = req.params.get('dataBlobURL')
+    if not dataBlobURL:
         try:
             req_body = req.get_json()
         except ValueError:
             pass
         else:
-            name = req_body.get('name')
+            dataBlobURL = req_body.get('dataBlobURL')
 
-    if name:
+    if dataBlobURL:
 
         # https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts/python-analyze
 
         subscription_key = os.environ['subscriptionKey']
-        assert subscription_key
-
+        assert subscription_key, "subscriptionKey environment variable not set"
         # Get endpoint and key from environment variables
-        analyze_url = "https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze"
+        staticModelAnalyzeEndpoint = os.environ['staticModelAnalyzeEndpoint']
+        assert staticModelAnalyzeEndpoint, "staticModelAnalyzeEndpoint environment variable not set"
+        imageAnalysisVisualFeatures = os.environ['imageAnalysisVisualFeatures']
+        assert imageAnalysisVisualFeatures, "imageAnalysisVisualFeatures environment variable not set"
 
-        if name == "test" or name == "Test" or name == "TEST":
+        if dataBlobURL == "test" or dataBlobURL == "Test" or dataBlobURL == "TEST":
             pass
             # Set image_url to the URL of th etest image that will be analyzed.
             image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/" + \
@@ -39,17 +41,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         else:
             pass
             # Set image_url to the URL of the image that will be analyzed
-            image_url = name
+            image_url = dataBlobURL
 
         logging.info(image_url)
         headers = {'Ocp-Apim-Subscription-Key': subscription_key}
-        params = {'visualFeatures': 'Categories,Description,Color,Brands'}
+        params = {'visualFeatures': imageAnalysisVisualFeatures}
         data = {'url': image_url}
-        response = requests.post(analyze_url, headers=headers,
+        response = requests.post(staticModelAnalyzeEndpoint, headers=headers,
                                 params=params, json=data)
-        response.raise_for_status()
-
-        return func.HttpResponse(json.dumps(response.json()))
+        return func.HttpResponse(json.dumps(response.json()), status_code=400)
     else:
         return func.HttpResponse(
              "Please pass a blob name on the query string or in the request body",

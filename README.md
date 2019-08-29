@@ -35,6 +35,7 @@ or
     This will enable you to call the approprate vision services from your modeling
 
 Then click on the extension icon on the far left in VS Code and add these VS Code extensions:
+
 - Python
 - Azure Account
 - Azure Functions
@@ -43,9 +44,7 @@ Now log into Azure from VS Code: https://www.ntweekly.com/2018/01/10/connect-mic
 
 Finally, enter this command in the command prompt to deploy your python code to the server:
 
-func azure functionapp publish {name of your app} --build-native-deps
-for example
-func azure functionapp publish brandDetectionApp --build-native-deps
+.env\Scripts\activate ; func pack --build-native-deps
 
 note: the reason you cannot use the VS code deploy command is your python dependencies load on the server
 will fail as a large number of imports do not have a required public registry specifying how to fetch the
