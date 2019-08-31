@@ -75,7 +75,7 @@ az cognitiveservices account create `
     --name $cognitiveServicesAccountName `
     --resource-group $modelResourceGroupName `
     --kind ComputerVision `
-    --sku 1 `
+    --sku S1 `
     --location $modelLocation `
     --yes
 
