@@ -11,14 +11,14 @@ from msrest.authentication import CognitiveServicesCredentials
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    dataBlobURL = req.params.get('dataBlobURL')
+    dataBlobURL = req.params.get('dataBlobUrl')
     if not dataBlobURL:
         try:
             req_body = req.get_json()
         except ValueError:
             pass
         else:
-            dataBlobURL = req_body.get('dataBlobURL')
+            dataBlobURL = req_body.get('dataBlobUrl')
 
     if dataBlobURL:
 
@@ -44,6 +44,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             image_url = dataBlobURL
 
         logging.info(image_url)
+
         headers = {'Ocp-Apim-Subscription-Key': subscription_key}
         params = {'visualFeatures': imageAnalysisVisualFeatures}
         data = {'url': image_url}
