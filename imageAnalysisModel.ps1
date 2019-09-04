@@ -3,59 +3,69 @@
 while([string]::IsNullOrWhiteSpace($subscription))
   {$subscription= Read-Host -Prompt "Input the name of the subscription where this solution will be deployed"}
 
-$modelResourceGroupName = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  (default=SemisupervisedModel)'
-  if ([string]::IsNullOrWhiteSpace($modelResourceGroupName)) {$modelResourceGroupName = "SemisupervisedModel"}
+$model_resource_group_name = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  (default=SemisupervisedModel)'
+  if ([string]::IsNullOrWhiteSpace($model_resource_group_name)) {$model_resource_group_name = "StaticMLProfSample"}
   
-while([string]::IsNullOrWhiteSpace($SemisupervisedAppName))
-  {$SemisupervisedAppName= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
+while([string]::IsNullOrWhiteSpace($model_app_name))
+  {$model_app_name= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
 
-while([string]::IsNullOrWhiteSpace($modelStorageAccountName))
-  {$modelStorageAccountName= Read-Host -Prompt "Input the name of the azure storage account you want to create for this installation of the model. Note this must be a name that only uses lowercase letters and numbers and is unique across all of Azure"}
+while([string]::IsNullOrWhiteSpace($model_storage_account_name))
+  {$model_storage_account_name = Read-Host -Prompt "Input the name of the azure storage account you want to create for this installation of the model. Note this must be a name that only uses lowercase letters and numbers and is unique across all of Azure"}
+  
+$cognitive_services_account_name = Read-Host -Prompt 'Input the name of the Azure Cognitive Services resource that you want to create for this installation of the model.  (default=ImageAnalysis)'
+  if ([string]::IsNullOrWhiteSpace($cognitive_services_account_name)) {$cognitive_services_account_name = "ImageAnalysis"}
 
-$modelStorageAccountKey = $null
-$modelLocation = "westus"
+$model_location = Read-Host -Prompt 'Input the Azure location, data center, where you want this solution deployed.  Note, if you will be using Python functions as part of your solution, As of 8/1/19, Python functions are only available in eastasia, eastus, northcentralus, northeurope, westeurope, and westus.  If you deploy your solution in a different data center network transit time may affect your solution performance.  (default=westus)'
+  if ([string]::IsNullOrWhiteSpace($model_location)) {$model_location = "westus"}
 
-if (az group exists --name $modelResourceGroupName) `
+$model_storage_account_key = $null
+
+if (az group exists --name $model_resource_group_name) `
 	{az group delete `
-	  --name $modelResourceGroupName `
+	  --name $model_resource_group_name `
 	  --subscription $subscription `
 	  --yes -y}
 
 az group create `
-  --name $modelResourceGroupName `
-  --location $modelLocation 
+  --name $model_resource_group_name `
+  --location $model_location 
 
 az storage account create `
-    --location $modelLocation `
-    --name $modelStorageAccountName `
-    --resource-group $modelResourceGroupName `
+    --location $model_location `
+    --name $model_storage_account_name `
+    --resource-group $model_resource_group_name `
     --sku Standard_LRS
 
-$modelStorageAccountKey = `
+$model_storage_account_key = `
 	(get-azureRmStorageAccountKey `
-		-resourceGroupName $modelResourceGroupName `
-		-AccountName $modelStorageAccountName).Value[0]
+		-resourceGroupName $model_resource_group_name `
+		-AccountName $model_storage_account_name).Value[0]
 
 az functionapp create `
-  --name $brandDetectionAppName `
-  --storage-account $modelStorageAccountName `
-  --consumption-plan-location $modelLocation `
-  --resource-group $modelResourceGroupName `
+  --name $model_app_name `
+  --storage-account $model_storage_account_name `
+  --consumption-plan-location $model_location `
+  --resource-group $model_resource_group_name `
   --os-type "Linux" `
   --runtime "python"
 
 az cognitiveservices account create `
-    --name "brandDetection" `
-    --resource-group $modelResourceGroupName `
+    --name $cognitive_services_account_name `
+    --resource-group $model_resource_group_name `
     --kind ComputerVision `
     --sku S0 `
     --location westus `
     --yes
 
+$cog_services_subscription_key = `
+  (get-AzureRmCognitiveServicesAccountKey `
+    -resourceGroupName $model_resource_group_name `
+    -AccountName $cognitive_services_account_name).Key1
+  
 az functionapp config appsettings set `
-    --name $brandDetectionAppName `
-    --resource-group imageAnalysisModel `
-    --settings "subscriptionKey=Null"
+    --name $model_app_name `
+    --resource-group $model_resource_group_name `
+    --settings "subscriptionKey=$cog_services_subscription_key"
 
 #gitrepo=https://github.com/thaugensorg/semi-supervisedModelSolution.git
 #token=<Replace with a GitHub access token>
