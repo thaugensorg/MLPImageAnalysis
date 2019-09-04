@@ -48,7 +48,7 @@ az cognitiveservices account create `
     --name "brandDetection" `
     --resource-group $modelResourceGroupName `
     --kind ComputerVision `
-    --sku F0 `
+    --sku S0 `
     --location westus `
     --yes
 
