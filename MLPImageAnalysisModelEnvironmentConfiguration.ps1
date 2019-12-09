@@ -1,4 +1,14 @@
 # instructions and documentation for this solution have been moved to the Read Me file in the solution
+Param(
+  [Parameter(Mandatory=$true)] [string] $subscription, 
+  [Parameter(Mandatory=$true)] [string] $modelResourceGroupName,
+  [Parameter(mandatory=$true)] [string] $modelLocation,
+  [Parameter(mandatory=$true)] [string] $modelAppName,
+  [Parameter(mandatory=$true)] [string] $modelStorageAccountName,
+  [Parameter(mandatory=$true)] [string] $cognitiveServicesAccountName,
+  [Parameter(mandatory=$true)] [string] $imageAnalysisEndpoint,
+  [Parameter(mandatory=$true)] [string] $imageAnalysisVisualFeatures
+)
 
 while([string]::IsNullOrWhiteSpace($subscription))
   {$subscription= Read-Host -Prompt "Input the name of the subscription where this solution will be deployed"}
@@ -9,8 +19,8 @@ if ([string]::IsNullOrWhiteSpace($modelLocation)) {$modelLocation = "westus"}
 $modelResourceGroupName = Read-Host -Prompt 'Input the name of the resource group that you want to create for this installation of the model.  The default value is MLProfessoarStaticModel'
 if ([string]::IsNullOrWhiteSpace($modelResourceGroupName)) {$modelResourceGroupName = "MLProfessoarStaticModel"}
 
-while([string]::IsNullOrWhiteSpace($staticModelAppName))
-  {$staticModelAppName= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
+while([string]::IsNullOrWhiteSpace($modelAppName))
+  {$modelAppName= Read-Host -Prompt "Input the name for the azure function app you want to create for your analysis model. Note this must be a name that is unique across all of Azure"}
 
 while([string]::IsNullOrWhiteSpace($modelStorageAccountName))
   {$modelStorageAccountName= Read-Host -Prompt "Input the name of the azure storage account you want to create for this installation of the model. Note this must be a name that is no longer than 24 characters and only uses lowercase letters and numbers and is unique across all of Azure"
@@ -23,8 +33,8 @@ while([string]::IsNullOrWhiteSpace($modelStorageAccountName))
 $cognitiveServicesAccountName = Read-Host -Prompt 'Input the name of the Azure Cognitive Services resource that you want to create for this installation of the model.  (default=ImageDetection)'
   if ([string]::IsNullOrWhiteSpace($cognitiveServicesAccountName)) {$cognitiveServicesAccountName = "ImageDetection"}
 
-$staticModelAnalyzeEndpoint = Read-Host -Prompt 'Input the http endpoint of the Azure Cognitive Services Image Analysis service.  (default=https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze)'
-  if ([string]::IsNullOrWhiteSpace($staticModelAnalyzeEndpoint)) {$staticModelAnalyzeEndpoint = "https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze"}
+$imageAnalysisEndpoint = Read-Host -Prompt 'Input the http endpoint of the Azure Cognitive Services Image Analysis service.  (default=https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze)'
+  if ([string]::IsNullOrWhiteSpace($imageAnalysisEndpoint)) {$imageAnalysisEndpoint = "https://westus.api.cognitive.microsoft.com/vision/v2.0/analyze"}
 
 $imageAnalysisVisualFeatures = Read-Host -Prompt 'Input the http endpoint of the Azure Cognitive Services Image Analysis service.  (default=Categories,Description,Color,Brands)'
   if ([string]::IsNullOrWhiteSpace($imageAnalysisVisualFeatures)) {$imageAnalysisVisualFeatures = "Categories,Description,Color,Brands"}
@@ -59,10 +69,10 @@ $modelStorageAccountKey = `
 		-resourceGroupName $modelResourceGroupName `
 		-AccountName $modelStorageAccountName).Value[0]
 
-Write-Host "Creating function app: " $ModelAppName -ForegroundColor "Green"
+Write-Host "Creating function app: " $modelAppName -ForegroundColor "Green"
 
 az functionapp create `
-  --name $staticModelAppName `
+  --name $modelAppName `
   --storage-account $modelStorageAccountName `
   --consumption-plan-location $modelLocation `
   --resource-group $modelResourceGroupName `
@@ -79,24 +89,24 @@ az cognitiveservices account create `
     --location $modelLocation `
     --yes
 
-Write-Host "Creating app config setting: staticModelAnalyzeEndpoint" -ForegroundColor "Green"
+Write-Host "Creating app config setting: imageAnalysisEndpoint" -ForegroundColor "Green"
 
 az functionapp config appsettings set `
-    --name $staticModelAppName `
+    --name $modelAppName `
     --resource-group $modelResourceGroupName `
-    --settings "staticModelAnalyzeEndpoint=$staticModelAnalyzeEndpoint"
+    --settings "imageAnalysisEndpoint=$imageAnalysisEndpoint"
 
 Write-Host "Creating app config setting: imageAnalysisVisualFeatures" -ForegroundColor "Green"
 
 az functionapp config appsettings set `
-    --name $staticModelAppName `
+    --name $modelAppName `
     --resource-group $modelResourceGroupName `
     --settings "imageAnalysisVisualFeatures=$imageAnalysisVisualFeatures"
 
 Write-Host "Creating app config setting: subscriptionKey" -ForegroundColor "Green"
 
 az functionapp config appsettings set `
-    --name $staticModelAppName `
+    --name $modelAppName `
     --resource-group $modelResourceGroupName `
     --settings "subscriptionKey=Null"
 
