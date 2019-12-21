@@ -1,9 +1,9 @@
 {
-  "azureFunctions.deploySubpath": "brandDetectionModel.zip",
+  "azureFunctions.deploySubpath": "MLPImageAnalysis.zip",
   "azureFunctions.pythonVenv": ".env",
   "azureFunctions.projectLanguage": "Python",
   "azureFunctions.projectRuntime": "~2",
   "debug.internalConsoleOptions": "neverOpen",
-  "azureFunctions.preDeployTask": "func: pack",
-  "python.pythonPath": ".env\\Scripts\\python.exe"
+  "azureFunctions.preDeployTask": "func: pack --build-native-deps",
+  "python.pythonPath": "c:\\Users\\thaugen\\source\\repos\\MLPObjectDetection\\.venv\\Scripts\\python.exe"
 }

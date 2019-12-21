@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "PowerShell Attach Interactive Session Runspace",
+      "type": "PowerShell",
+      "request": "attach",
+      "processId": "current"
+    },
+
+    {
       "name": "Attach to Python Functions",
       "type": "python",
       "request": "attach",
