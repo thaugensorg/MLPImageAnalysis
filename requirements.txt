@@ -1,6 +1,6 @@
 azure-cognitiveservices-vision-computervision==0.4.0
 azure-common==1.1.23
-certifi==2019.6.16
+certifi==2022.12.7
 msrest==0.6.8
 oauthlib==3.0.2
 pylint==2.3.1
